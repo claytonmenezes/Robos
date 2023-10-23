@@ -1,0 +1,26 @@
+{
+  "name": "robos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx index",
+    "dev": "tsx watch index",
+    "build": "tsup index.ts"
+  },
+  "author": "Clayton M Santos",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "puppeteer": "^19.11.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.17",
+    "tsup": "^6.7.0",
+    "tsx": "^3.12.10",
+    "typescript": "^4.9.5"
+  }
+}
