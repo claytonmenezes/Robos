@@ -1,4 +1,5 @@
 export class ProcessoAssociadoModel {
+  Id?: string
   Processo?: string
   Titular?: string
   TipoAssociacao?: string

@@ -1,4 +1,5 @@
 export class ProtocoloModel {
+  Id?: string
   DocumentoProcesso?: string
   TipoDocumento?: string
   DataDocumento?: string

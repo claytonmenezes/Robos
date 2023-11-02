@@ -9,6 +9,7 @@ import { SeiModel } from './SeiModel'
 import { DocumentoProcessoModel } from './DocumentoProcessoModel'
 
 export class ProcessoModel {
+  Id?: string
   NumeroProcesso?: string
   NUP?: string
   Area?: string

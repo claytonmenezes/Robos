@@ -1,4 +1,5 @@
 export class PessoaRelacionadaModel {
+  Id?: string
   TipoRelacao?: string
   CpfCnpj?: string
   Nome?: string

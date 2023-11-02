@@ -1,4 +1,5 @@
 export class SubstanciaModel {
+  Id?: string
   Nome?: string
   TipoUso?: string
   DataInicio?: string

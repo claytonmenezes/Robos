@@ -2,6 +2,7 @@ import { AndamentoModel } from "./AndamentoModel"
 import { ProtocoloModel } from "./ProtocoloModel"
 
 export class SeiModel {
+  Id?: string
   Processo?: string
   Tipo?: string
   DataRegistro?: string
