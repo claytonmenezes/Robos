@@ -8,6 +8,7 @@ export class SeiModel {
   DataRegistro?: string
   Interessados?: string
   Link?: string
+  ProcessoId?: string
   Protocolos?: ProtocoloModel[]
   Andamentos?: AndamentoModel[]
 }

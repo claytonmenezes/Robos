@@ -7,4 +7,5 @@ export class TituloModel {
   DataPublicacao?: string
   DataVencimento?: string
   DataCriacao?: Date
+  ProcessoId?: string
 }

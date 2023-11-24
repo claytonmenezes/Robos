@@ -9,4 +9,5 @@ export class ProcessoAssociadoModel {
   Observacao?: string
   Link?: string
   DataCriacao?: Date
+  ProcessoId?: string
 }

@@ -4,4 +4,5 @@ export class AndamentoModel {
   Unidade?: string
   Descricao?: string
   DataCriacao?: Date
+  SeiId?: string
 }

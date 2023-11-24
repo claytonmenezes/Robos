@@ -8,4 +8,5 @@ export class PessoaRelacionadaModel {
   DataInicio?: string
   DataFinal?: string
   DataCriacao?: Date
+  ProcessoId?: string
 }

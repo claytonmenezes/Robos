@@ -6,4 +6,5 @@ export class SubstanciaModel {
   DataFinal?: string
   MotivoEncerramento?: string
   DataCriacao?: Date
+  ProcessoId?: string
 }

@@ -7,4 +7,5 @@ export class ProtocoloModel {
   Unidade?: string
   Link?: string
   DataCriacao?: Date
+  SeiId?: string
 }
