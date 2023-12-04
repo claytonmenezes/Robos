@@ -1,7 +1,8 @@
-import { SeiModel } from "../models/SeiModel"
+import { Page } from 'puppeteer'
+import { Sei } from '../models/Sei'
 
 export interface ISeiAnm {
-  pesquisaSei (nup: string, captcha: string): Promise<void>
-  pegaSei (): Promise<SeiModel> 
-  pegaCaptcha (selector: string, tipo: string): Promise<string>
+  pesquisaSei (page: Page, up: string, captcha: string): Promise<void>
+  pegaSei (page: Page ): Promise<Sei> 
+  pegaCaptcha (page: Page, selector: string, tipo: string): Promise<string>
 }

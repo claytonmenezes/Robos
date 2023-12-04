@@ -11,7 +11,7 @@ const router = Router()
 const db = new Db()
 const metodosNavegador = new MetodosNavegador()
 const sistemasAnm = new SistemasAnm(metodosNavegador)
-const sistemasAnmController = new SistemasAnmController(sistemasAnm, db)
+const sistemasAnmController = new SistemasAnmController(sistemasAnm, metodosNavegador, db)
 const seiAnm = new SeiAnm(metodosNavegador)
 const seiAnmController = new SeiAnmController(seiAnm, db)
 

@@ -1,25 +1,54 @@
+import puppeteer, { Browser, Page } from 'puppeteer'
 import { IMetodosNavegador } from '../interfaces/IMetodosNavegador'
 
 export class MetodosNavegador implements IMetodosNavegador {
-  defineBrowser(): Promise<void> {
-    throw new Error('Method not implemented.')
+  async abrirBrowser(): Promise<Browser> {
+    const browser = await puppeteer.launch({
+      headless: false,
+      // headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+    return browser
   }
-  abrePagina(url: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async fecharBrowser(browser: Browser): Promise<void> {
+    await browser.close()
   }
-  pegaTextoElemento(selector: string): Promise<string> {
-    throw new Error('Method not implemented.')
+  async navegar(browser: Browser, url: string): Promise<Page> {
+    const page = await browser.newPage()
+    page.setDefaultNavigationTimeout(0)
+    await page.goto(url, { timeout: 0 })
+    return page
   }
-  pegaTableElemento(selector: string): Promise<Object[]> {
-    throw new Error('Method not implemented.')
+  async pegaTextoElemento(page: Page, selector: string): Promise<string> {
+    return await page.$eval(selector, (e) => e.innerHTML)
   }
-  esperaElementoExistir(selector: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async esperaElementoExistir(page: Page, selector: string): Promise<void> {
+    if (!await this.verificaElementoVisivel(page, selector)) {
+      await this.esperaElementoExistir(page, selector)
+    }
   }
-  esperaElementoSumir(selector: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async esperaElementoSumir(page: Page, selector: string): Promise<void> {
+    if (await this.verificaElementoVisivel(page, selector)) {
+      await this.esperaElementoSumir(page, selector)
+    }
   }
-  verificaElementoVisivel(selector: string): Promise<Boolean> {
-    throw new Error('Method not implemented.')
+  async verificaElementoVisivel(page: Page, selector: string): Promise<Boolean> {
+    try {
+      const element = await page.$(selector)
+      const isVisibleHandle = await page.evaluateHandle((e) => {
+        if (!e) return false
+        const style = window.getComputedStyle(e)
+        return (style && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0')
+      }, element)
+      var visible = await isVisibleHandle.jsonValue()
+      const box = await element?.boxModel()
+      if (visible && box) {
+        return true
+      }
+      return false
+    } catch (error) {
+      return false
+    }
   }
+
 }
