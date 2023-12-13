@@ -20,11 +20,11 @@ export class SistemasAnmController {
     try {
       const numeroProcesso = req.query.numeroProcesso as string
       let processo = await this.db.buscaProcesso(client, numeroProcesso)
-      if (!processo) return res.status(200).send(processo)
+      if (processo) return res.status(200).send(processo)
       else {
         const page = await this.metodosNavegador.navegar(browser, 'https://sistemas.anm.gov.br/SCM/site/admin/dadosProcesso.aspx')
         processo = await this.sistemasAnm.pegaProcesso(page, numeroProcesso)
-        // processo = await this.db.insereProcesso(client, processo)
+        processo = await this.db.insereProcesso(client, processo)
       }
       return res.status(200).send(processo) 
     } catch (error) {

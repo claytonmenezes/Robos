@@ -12,6 +12,7 @@ import { Substancia } from '../models/Substancia'
 import { Titulo } from '../models/Titulo'
 import { Andamento } from '../models/Andamento'
 import { Protocolo } from '../models/Protocolo'
+import { uuid } from './Utils'
 
 export class Db implements IDb {
   async conectar(): Promise<Client> {
@@ -23,27 +24,42 @@ export class Db implements IDb {
     await client.end()
   }
   async insereProcesso(client: Client, processo: Processo): Promise<Processo> {
-    const queryResultProcessos = await client.query<Processo>(
-      `insert into Processo (NumeroProcesso, NUP, Area, TipoRequerimento, FaseAtual, Ativo, Superintendencia, UF, UnidadeProtocolizadora, DataProtocolo, DataPrioridade, NumeroProcessoCadastroEmpresa, Link)
-        values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) select * from Processo where Id = $$identity`,
-      [processo.NumeroProcesso, processo.NUP, processo.Area, processo.TipoRequerimento, processo.FaseAtual, processo.Ativo, processo.Superintendencia, processo.UF, processo.UnidadeProtocolizadora, processo.DataProtocolo, processo.DataPrioridade, processo.NumeroProcessoCadastroEmpresa, processo.Link]
-    )
-    return queryResultProcessos.rows[0]
+    await client.query(`
+      insert into "Processo" ("Id", "NumeroProcesso", "NUP", "Area", "TipoRequerimento", "FaseAtual", "Ativo", "Superintendencia", "UF", "UnidadeProtocolizadora", "DataProtocolo", "DataPrioridade", "NumeroProcessoCadastroEmpresa", "Link")
+      values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);
+    `, [uuid(), processo.NumeroProcesso, processo.NUP, processo.Area, processo.TipoRequerimento, processo.FaseAtual, processo.Ativo, processo.Superintendencia, processo.UF, processo.UnidadeProtocolizadora, processo.DataProtocolo, processo.DataPrioridade, processo.NumeroProcessoCadastroEmpresa, processo.Link])
+    const queryResultProcessos = await client.query<Processo>(`select * from "Processo" where "NumeroProcesso" = '${processo.NumeroProcesso}'`)
+    let novoProcesso = queryResultProcessos.rows[0]
+    if (novoProcesso.PessoasRelacionadas?.length) novoProcesso.PessoasRelacionadas = await this.inserePessoasRelacionadas(client, processo.PessoasRelacionadas, processo.Id)
+    if (novoProcesso.CondicoesPropriedadeSolo?.length) novoProcesso.CondicoesPropriedadeSolo = await this.insereCondicoesPropriedadeSolo(client, processo.CondicoesPropriedadeSolo, processo.Id)
+    if (novoProcesso.DocumentosProcesso?.length) novoProcesso.DocumentosProcesso = await this.insereDocumentosProcesso(client, processo.DocumentosProcesso, processo.Id)
+    return novoProcesso
   }
-  async insereCondicoesPropriedadeSolo(client: Client, condicoesPropriedadeSolo: CondicoesPropriedadeSolo[], processoId: string): Promise<CondicoesPropriedadeSolo[]> {
-    const queryResultCondicoesPropriedadeSolo = await client.query<CondicoesPropriedadeSolo>(`
-      insert into CondicaoPropriedadeSolo (Tipo, DataCriacao, ProcessoId)
-      values ${condicoesPropriedadeSolo.map(cp => (`(${cp.Tipo}, ${cp.DataCriacao}, ${processoId})`)).toString()}
-      select * from CondicaoPropriedadeSolo where ProcessoId = ${processoId}`
+  async inserePessoasRelacionadas(client: Client, pessoasRelacionadas?: PessoaRelacionada[], processoId?: string): Promise<PessoaRelacionada[]> {
+    if (!pessoasRelacionadas?.length) return []
+    const queryResultPessoaRelacionada = await client.query<PessoaRelacionada>(`
+      insert into PessoaRelacionada ("Id", "TipoRelacao", "CpfCnpj", "Nome", "ResponsabilidadeRepresentacao", "PrazoArrendamento", "DataInicio", "DataFinal", "DataCriacao", "ProcessoId")
+      values ${pessoasRelacionadas.map(pr => (`(${uuid()}, ${pr.TipoRelacao}, ${pr.CpfCnpj}, ${pr.Nome}, ${pr.ResponsabilidadeRepresentacao}, ${pr.PrazoArrendamento}, ${pr.DataInicio}, ${pr.DataFinal}, ${pr.DataCriacao}, ${processoId})`)).toString()}
+      select * from PessoaRelacionada where ProcessoId = ${processoId}`
     )
+    return queryResultPessoaRelacionada.rows
+  }
+  async insereCondicoesPropriedadeSolo(client: Client, condicoesPropriedadeSolo?: CondicoesPropriedadeSolo[], processoId?: string): Promise<CondicoesPropriedadeSolo[]> {
+    if (!condicoesPropriedadeSolo?.length) return []
+    await client.query<CondicoesPropriedadeSolo>(`
+      insert into "CondicaoPropriedadeSolo" ("Id", "Tipo", "DataCriacao", "ProcessoId")
+      values ${condicoesPropriedadeSolo.map(cp => (`('${uuid()}', '${cp.Tipo}', ${cp.DataCriacao}, '${processoId}')`)).toString()}`
+    )
+    const queryResultCondicoesPropriedadeSolo = await client.query<CondicoesPropriedadeSolo>(`select * from "CondicaoPropriedadeSolo" where "ProcessoId" = '${processoId}'`)
     return queryResultCondicoesPropriedadeSolo.rows
   }
-  async insereDocumentosProcesso(client: Client, documentosProcesso: DocumentoProcesso[], processoId: string): Promise<DocumentoProcesso[]> {
-    const queryResultDocumentoProcesso = await client.query<DocumentoProcesso>(`
-      insert into DocumentoProcesso (Documento, DataProtocolo, DataCriacao, ProcessoId)
-      values ${documentosProcesso.map(dp => (`(${dp.Documento}, ${dp.DataProtocolo}, ${dp.DataCriacao}, ${processoId})`)).toString()}
-      select * from DocumentoProcesso where ProcessoId = ${processoId}`
+  async insereDocumentosProcesso(client: Client, documentosProcesso?: DocumentoProcesso[], processoId?: string): Promise<DocumentoProcesso[]> {
+    if (!documentosProcesso?.length) return []
+    await client.query<DocumentoProcesso>(`
+      insert into "DocumentoProcesso" ("Id", "Documento", "DataProtocolo", "DataCriacao", "ProcessoId")
+      values ${documentosProcesso.map(dp => (`('${uuid()}', '${dp.Documento}', '${dp.DataProtocolo}', ${dp.DataCriacao}, '${processoId}')`)).toString()}`
     )
+    const queryResultDocumentoProcesso = await client.query<CondicoesPropriedadeSolo>(`select * from "CondicaoPropriedadeSolo" where "ProcessoId" = '${processoId}'`)
     return queryResultDocumentoProcesso.rows
   }
   async insereEventos(client: Client, eventos: Evento[], processoId: string): Promise<Evento[]> {
@@ -67,14 +83,6 @@ export class Db implements IDb {
       select * from Municipio where ProcessoId = ${processoId}`
     )
     return queryResultMunicipio.rows
-  }
-  async inserePessoasRelacionadas(client: Client, pessoasRelacionadas: PessoaRelacionada[], processoId: string): Promise<PessoaRelacionada[]> {
-    const queryResultPessoaRelacionada = await client.query<PessoaRelacionada>(`
-      insert into PessoaRelacionada (TipoRelacao, CpfCnpj, Nome, ResponsabilidadeRepresentacao, PrazoArrendamento, DataInicio, DataFinal, DataCriacao, ProcessoId)
-      values ${pessoasRelacionadas.map(pr => (`(${pr.TipoRelacao}, ${pr.CpfCnpj}, ${pr.Nome}, ${pr.ResponsabilidadeRepresentacao}, ${pr.PrazoArrendamento}, ${pr.DataInicio}, ${pr.DataFinal}, ${pr.DataCriacao}, ${processoId})`)).toString()}
-      select * from PessoaRelacionada where ProcessoId = ${processoId}`
-    )
-    return queryResultPessoaRelacionada.rows
   }
   async insereProcessosAssociados(client: Client, processosAssociados: ProcessoAssociado[], processoId: string): Promise<ProcessoAssociado[]> {
     const queryResultProcessoAssociado = await client.query<ProcessoAssociado>(`

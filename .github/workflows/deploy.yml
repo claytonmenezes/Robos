@@ -1,0 +1,21 @@
+name: CI deploy to Robos
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install
+        run: npm install
+
+      - name: Start/Reload PM2
+        run: pm2 restart 'Robos' --update-env

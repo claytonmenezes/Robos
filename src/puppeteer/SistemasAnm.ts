@@ -23,7 +23,7 @@ export class SistemasAnm implements ISistemasAnm {
     const captcha = await this.pegaCaptcha(page, '#ctl00_conteudo_trCaptcha > td:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img')
     await this.pesquisaProcesso(page, numeroProcesso, captcha)
     const processo = createProcesso({
-      NumeroProcesso: await this.metodos.pegaTextoElemento(page, '#ctl00_conteudo_txtNumeroProcesso'),
+      NumeroProcesso: numeroProcesso,
       NUP: (await this.metodos.pegaTextoElemento(page, '#ctl00_conteudo_lblNup')).replace('.', '').replace('/', '').replace('-', ''),
       Area: await this.metodos.pegaTextoElemento(page, '#ctl00_conteudo_lblArea'),
       TipoRequerimento: await this.metodos.pegaTextoElemento(page, '#ctl00_conteudo_lblTipoRequerimento'),
