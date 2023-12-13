@@ -15,7 +15,7 @@ const sistemasAnmController = new SistemasAnmController(sistemasAnm, metodosNave
 const seiAnm = new SeiAnm(metodosNavegador)
 const seiAnmController = new SeiAnmController(seiAnm, db)
 
-router.get('/', (_, res) => res.sendStatus(200))
+router.get('/', (_, res) => res.status(200).send('olá'))
 router.get('/buscaProcesso', sistemasAnmController.buscaProcesso)
 router.get('/buscaProcessoEmLote', sistemasAnmController.buscaProcessoEmLote)
 router.get('/buscaSei', seiAnmController.buscaSei)
