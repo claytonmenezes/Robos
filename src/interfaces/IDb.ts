@@ -27,7 +27,7 @@ export interface IDb {
   insereSei (client: Client, sei: Sei, processoId: string): Promise<Sei>
   insereProtocolos (client: Client, protocolos: Protocolo[], seiId: string): Promise<Protocolo[]>
   insereAndamentos (client: Client, andamentos: Andamento[], seiId: string): Promise<Andamento[]>
-  buscaProcesso (client: Client, numeroProcesso: string): Promise<Processo> | Promise<null>
+  buscaProcesso (client: Client, numeroProcesso: string): Promise<Processo | void>
   buscaProcessoPorNup (client: Client, nup: string): Promise<Processo> | Promise<null>
   buscarCondicoesPropriedadeSoloPorProcesso(client: Client, processoId: string): Promise<CondicoesPropriedadeSolo[]> | Promise<null>
   buscarDocumentosProcessoPorProcesso(client: Client, processoId: string): Promise<DocumentoProcesso[]> | Promise<null>

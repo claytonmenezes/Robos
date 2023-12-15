@@ -117,7 +117,7 @@ export class Db implements IDb {
     const queryResultAndamento = await client.query<Andamento>('select * from Andamento where SeiId = $1', [seiId])
     return queryResultAndamento.rows
   }
-  async buscaProcesso(client: Client, numeroProcesso: string): Promise<Processo> {
+  async buscaProcesso(client: Client, numeroProcesso: string): Promise<Processo | void> {
     const queryResultProcessos = await client.query(`
       select *
       from "Processo"
@@ -125,15 +125,17 @@ export class Db implements IDb {
     `, [numeroProcesso])
   
     let processo: Processo = queryResultProcessos.rows[0]
-    processo.CondicoesPropriedadeSolo = await this.buscarCondicoesPropriedadeSoloPorProcesso(client, processo.Id)
-    processo.DocumentosProcesso = await this.buscarDocumentosProcessoPorProcesso(client, processo.Id)
-    processo.Eventos = await this.buscarEventosPorProcesso(client, processo.Id)
-    processo.Municipios = await this.buscarMunicipiosPorProcesso(client, processo.Id)
-    processo.PessoasRelacionadas = await this.buscarPessoasRelacionadasPorProcesso(client, processo.Id)
-    processo.ProcessosAssociados = await this.buscarProcessosAssociadosPorProcesso(client, processo.Id)
-    processo.Substancias = await this.buscarSubstanciasPorProcesso(client, processo.Id)
-    processo.Titulos = await this.buscarTitulosPorProcesso(client, processo.Id)
-    return processo;
+    if (processo) {
+      processo.CondicoesPropriedadeSolo = await this.buscarCondicoesPropriedadeSoloPorProcesso(client, processo.Id)
+      processo.DocumentosProcesso = await this.buscarDocumentosProcessoPorProcesso(client, processo.Id)
+      processo.Eventos = await this.buscarEventosPorProcesso(client, processo.Id)
+      processo.Municipios = await this.buscarMunicipiosPorProcesso(client, processo.Id)
+      processo.PessoasRelacionadas = await this.buscarPessoasRelacionadasPorProcesso(client, processo.Id)
+      processo.ProcessosAssociados = await this.buscarProcessosAssociadosPorProcesso(client, processo.Id)
+      processo.Substancias = await this.buscarSubstanciasPorProcesso(client, processo.Id)
+      processo.Titulos = await this.buscarTitulosPorProcesso(client, processo.Id)
+      return processo
+    }
   }
   async buscarCondicoesPropriedadeSoloPorProcesso(client: Client, processoId?: string): Promise<CondicoesPropriedadeSolo[]> {
     const queryResultCondicoesPropriedadeSolo = await client.query<CondicoesPropriedadeSolo>('select * from "CondicaoPropriedadeSolo" where "ProcessoId" = $1', [processoId])
