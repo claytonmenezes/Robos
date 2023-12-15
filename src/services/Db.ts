@@ -38,7 +38,6 @@ export class Db implements IDb {
     novoProcesso.ProcessosAssociados = await this.insereProcessosAssociados(client, processo.ProcessosAssociados, novoProcesso.Id)
     novoProcesso.DocumentosProcesso = await this.insereDocumentosProcesso(client, processo.DocumentosProcesso, novoProcesso.Id)
     novoProcesso.Eventos = await this.insereEventos(client, processo.Eventos, novoProcesso.Id)
-    console.log(novoProcesso)
     return novoProcesso
   }
   async inserePessoasRelacionadas(client: Client, pessoasRelacionadas?: PessoaRelacionada[], processoId?: string): Promise<PessoaRelacionada[]> {
