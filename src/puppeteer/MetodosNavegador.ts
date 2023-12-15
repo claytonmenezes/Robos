@@ -4,8 +4,7 @@ import { IMetodosNavegador } from '../interfaces/IMetodosNavegador'
 export class MetodosNavegador implements IMetodosNavegador {
   async abrirBrowser(): Promise<Browser> {
     const browser = await puppeteer.launch({
-      headless: false,
-      // headless: 'new',
+      headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
     return browser
