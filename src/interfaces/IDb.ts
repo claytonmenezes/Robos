@@ -29,6 +29,14 @@ export interface IDb {
   insereAndamentos (client: Client, andamentos: Andamento[], seiId: string): Promise<Andamento[]>
   buscaProcesso (client: Client, numeroProcesso: string): Promise<Processo> | Promise<null>
   buscaProcessoPorNup (client: Client, nup: string): Promise<Processo> | Promise<null>
+  buscarCondicoesPropriedadeSoloPorProcesso(client: Client, processoId: string): Promise<CondicoesPropriedadeSolo[]> | Promise<null>
+  buscarDocumentosProcessoPorProcesso(client: Client, processoId: string): Promise<DocumentoProcesso[]> | Promise<null>
+  buscarEventosPorProcesso(client: Client, processoId: string): Promise<Evento[]> | Promise<null>
+  buscarMunicipiosPorProcesso(client: Client, processoId: string): Promise<Municipio[]> | Promise<null>
+  buscarPessoasRelacionadasPorProcesso(client: Client, processoId: string): Promise<PessoaRelacionada[]> | Promise<null>
+  buscarProcessosAssociadosPorProcesso(client: Client, processoId: string): Promise<ProcessoAssociado[]> | Promise<null>
+  buscarSubstanciasPorProcesso(client: Client, processoId: string): Promise<Substancia[]> | Promise<null>
+  buscarTitulosPorProcesso(client: Client, processoId: string): Promise<Titulo[]> | Promise<null>
   buscaSei (client: Client, nup: string): Promise<Sei> | Promise<null>
   deletaProcesso (client: Client, processoId: string): Promise<void>
   deletaSei (client: Client, seiId: string): Promise<void>
