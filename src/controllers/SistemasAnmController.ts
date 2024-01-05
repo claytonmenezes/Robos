@@ -16,21 +16,32 @@ export class SistemasAnmController {
     this.db = db
   }
   buscaProcesso = async (req: Request, res: Response) => {
+    console.log('inicio buscaProcesso')
     const client = await this.db.conectar()
     const browser = await this.metodosNavegador.abrirBrowser()
     try {
       const numeroProcesso = req.query.numeroProcesso as string
+      console.log('numeroProcesso', numeroProcesso)
       let processoDb = await this.db.buscaProcesso(client, numeroProcesso)
+      console.log('tem processoDb => ', !!processoDb)
       res.status(200).send(processoDb)
       const page = await this.metodosNavegador.navegar(browser, 'https://sistemas.anm.gov.br/SCM/site/admin/dadosProcesso.aspx')
+      console.log('antes buscar processo')
       let processo = await this.sistemasAnm.pegaProcesso(page, numeroProcesso)
+      console.log('depois buscar processo')
       if (processoDb && processoDb.Id) this.db.deletaProcesso(client, processoDb.Id)
       processo = await this.db.insereProcesso(client, processo, processoDb?.Id)
+      console.log('antes axios')
       axios({
         baseURL: process.env.URL_SOCKET,
         params: {sessionId: req.query.sessionId},
         url: '/buscaProcesso',
         data: processo
+      }).then(() => {
+        console.log(`enviou para socket`)
+      }).catch((e) => {
+        console.log('Erro no envio da requisição para o socket')
+        console.error(e)
       })
     } finally {
       this.db.desconectar(client)
