@@ -29,8 +29,8 @@ export class SistemasAnmController {
       console.log('antes buscar processo')
       let processo = await this.sistemasAnm.pegaProcesso(page, numeroProcesso)
       console.log('depois buscar processo')
-      if (processoDb && processoDb.Id) this.db.deletaProcesso(client, processoDb.Id)
-      processo = await this.db.insereProcesso(client, processo, processoDb?.Id)
+      // if (processoDb && processoDb.Id) this.db.deletaProcesso(client, processoDb.Id)
+      // processo = await this.db.insereProcesso(client, processo, processoDb?.Id)
       console.log('antes axios')
       axios({
         baseURL: process.env.URL_SOCKET,
