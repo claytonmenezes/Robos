@@ -1,5 +1,6 @@
 import puppeteer, { Browser, Page } from 'puppeteer'
 import { IMetodosNavegador } from '../interfaces/IMetodosNavegador'
+import { base64ToCaptchaProcesso } from '../services/Utils'
 
 export class MetodosNavegador implements IMetodosNavegador {
   async abrirBrowser(): Promise<Browser> {
@@ -52,5 +53,10 @@ export class MetodosNavegador implements IMetodosNavegador {
       return false
     }
   }
-
+  async pegaCaptcha (page: Page, selector: string): Promise<string> {
+    const el = await page.$(selector)
+    const base64 = await el?.screenshot({ encoding: 'base64' })
+    const captcha = await base64ToCaptchaProcesso(base64 as string) as string
+    return captcha
+  }
 }

@@ -13,7 +13,7 @@ const metodosNavegador = new MetodosNavegador()
 const sistemasAnm = new SistemasAnm(metodosNavegador)
 const sistemasAnmController = new SistemasAnmController(sistemasAnm, metodosNavegador, db)
 const seiAnm = new SeiAnm(metodosNavegador)
-const seiAnmController = new SeiAnmController(seiAnm, db)
+const seiAnmController = new SeiAnmController(seiAnm, metodosNavegador, db)
 
 router.get('/', (_, res) => res.sendStatus(200))
 router.get('/SistemasAnm/buscaProcesso', sistemasAnmController.buscaProcesso)

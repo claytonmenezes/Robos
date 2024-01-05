@@ -1,5 +1,5 @@
 import { ElementHandle, Page } from 'puppeteer'
-import { base64ToCaptchaProcesso, esperar, uuid } from '../services/Utils'
+import { esperar, uuid } from '../services/Utils'
 import { IMetodosNavegador } from '../interfaces/IMetodosNavegador'
 import { ISistemasAnm } from '../interfaces/ISistemasAnm'
 import { Processo, createProcesso } from '../models/Processo'
@@ -20,7 +20,7 @@ export class SistemasAnm implements ISistemasAnm {
   }
 
   async pegaProcesso (page: Page, numeroProcesso: string): Promise<Processo> {
-    const captcha = await this.pegaCaptcha(page, '#ctl00_conteudo_trCaptcha > td:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img')
+    const captcha = await this.metodos.pegaCaptcha(page, '#ctl00_conteudo_trCaptcha > td:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img')
     await this.pesquisaProcesso(page, numeroProcesso, captcha)
     const processo = createProcesso({
       NumeroProcesso: numeroProcesso,
@@ -62,12 +62,6 @@ export class SistemasAnm implements ISistemasAnm {
       await this.metodos.esperaElementoSumir(page, '#ctl00_upCarregando')
       await esperar(1000)
     }
-  }
-  async pegaCaptcha (page: Page, selector: string): Promise<string> {
-    const el = await page.$(selector)
-    const base64 = await el?.screenshot({ encoding: 'base64' })
-    const captcha = await base64ToCaptchaProcesso(base64 as string) as string
-    return captcha
   }
   async pegaTablePessoaRelacionada(page: Page): Promise<PessoaRelacionada[]> {
     const pessoasRelacionadas: PessoaRelacionada[] = []

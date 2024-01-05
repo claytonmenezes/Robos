@@ -9,4 +9,5 @@ export interface IMetodosNavegador {
   esperaElementoExistir (page: Page, selector: string): Promise<void>
   esperaElementoSumir (page: Page, selector: string): Promise<void>
   verificaElementoVisivel (page: Page, selector: string): Promise<Boolean>
+  pegaCaptcha (page: Page, selector: string): Promise<string>
 }

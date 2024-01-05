@@ -12,7 +12,6 @@ import { Evento } from '../models/Evento'
 export interface ISistemasAnm {
   pesquisaProcesso (page: Page, numeroProcesso: string, captcha: string): Promise<void>
   pegaProcesso (page: Page, numeroProcesso: string): Promise<Processo>
-  pegaCaptcha (page: Page, selector: string, tipo: string): Promise<string>
   pegaTablePessoaRelacionada (page: Page): Promise<PessoaRelacionada[]>
   pegaTableTitulo (page: Page): Promise<Titulo[]>
   pegaTableSubstancia (page: Page): Promise<Substancia[]>
