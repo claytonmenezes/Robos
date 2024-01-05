@@ -15,7 +15,7 @@ import { Client } from "pg"
 export interface IDb {
   conectar (): Promise<Client>
   desconectar (client: Client): Promise<void>
-  insereProcesso (client: Client, processo: Processo): Promise<Processo>
+  insereProcesso (client: Client, processo: Processo, processoId?: string): Promise<Processo>
   insereCondicoesPropriedadeSolo (client: Client, condicoesPropriedadeSolo: CondicoesPropriedadeSolo[], processoId: string): Promise<CondicoesPropriedadeSolo[]>
   insereDocumentosProcesso (client: Client, documentosProcesso: DocumentoProcesso[], processoId: string): Promise<DocumentoProcesso[]>
   insereEventos (client: Client, eventos: Evento[], processoId: string): Promise<Evento[]>
@@ -40,4 +40,5 @@ export interface IDb {
   buscaSei (client: Client, nup: string): Promise<Sei> | Promise<null>
   deletaProcesso (client: Client, processoId: string): Promise<void>
   deletaSei (client: Client, seiId: string): Promise<void>
+  verificaProcessoExiste (client: Client, numeroProcesso: string): Promise<boolean>
 }

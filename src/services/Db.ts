@@ -23,11 +23,11 @@ export class Db implements IDb {
   async desconectar(client: Client): Promise<void> {
     await client.end()
   }
-  async insereProcesso(client: Client, processo: Processo): Promise<Processo> {
+  async insereProcesso(client: Client, processo: Processo, processoId: string): Promise<Processo> {
     await client.query(`
       insert into "Processo" ("Id", "NumeroProcesso", "NUP", "Area", "TipoRequerimento", "FaseAtual", "Ativo", "Superintendencia", "UF", "UnidadeProtocolizadora", "DataProtocolo", "DataPrioridade", "NumeroProcessoCadastroEmpresa", "Link")
       values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);
-    `, [uuid(), processo.NumeroProcesso, processo.NUP, processo.Area, processo.TipoRequerimento, processo.FaseAtual, processo.Ativo, processo.Superintendencia, processo.UF, processo.UnidadeProtocolizadora, processo.DataProtocolo, processo.DataPrioridade, processo.NumeroProcessoCadastroEmpresa, processo.Link])
+    `, [processoId || uuid(), processo.NumeroProcesso, processo.NUP, processo.Area, processo.TipoRequerimento, processo.FaseAtual, processo.Ativo, processo.Superintendencia, processo.UF, processo.UnidadeProtocolizadora, processo.DataProtocolo, processo.DataPrioridade, processo.NumeroProcessoCadastroEmpresa, processo.Link])
     const queryResultProcessos = await client.query<Processo>(`select * from "Processo" where "NumeroProcesso" = '${processo.NumeroProcesso}'`)
     let novoProcesso = queryResultProcessos.rows[0]
     novoProcesso.PessoasRelacionadas = await this.inserePessoasRelacionadas(client, processo.PessoasRelacionadas, novoProcesso.Id)
@@ -178,18 +178,17 @@ export class Db implements IDb {
   }
   async deletaProcesso(client: Client, processoId?: string): Promise<void> {
     await client.query(`
-      delete from "CondicaoPropriedadeSolo" where "ProcessoId" = ${processoId}
-      delete from "DocumentoProcesso" where "ProcessoId" = ${processoId}
-      delete from "Evento" where "ProcessoId" = ${processoId}
-      delete from "Municipio" where "ProcessoId" = ${processoId}
-      delete from "PessoaRelacionada" where "ProcessoId" = ${processoId}
-      delete from "ProcessoAssociado" where "ProcessoId" = ${processoId}
-      delete from "Substancia" where "ProcessoId" = ${processoId}
-      delete from "Titulo" where "ProcessoId" = ${processoId}
-      delete from "Andamento" a where exists (select 3 from "Sei" s where a."SeiId" = s."Id" and s."ProcessoId" = ${processoId})
-      delete from "Protocolo" p where exists (select 3 from "Sei" s where p."SeiId" = s."Id" and s."ProcessoId" = ${processoId})
-      delete from "Sei" where "ProcessoId" = ${processoId}
-      delete from "Processo" where "Id" = ${processoId}`
+      delete from "CondicaoPropriedadeSolo" where "ProcessoId" = '${processoId}';
+      delete from "DocumentoProcesso" where "ProcessoId" = '${processoId}';
+      delete from "Evento" where "ProcessoId" = '${processoId}';
+      delete from "Municipio" where "ProcessoId" = '${processoId}';
+      delete from "PessoaRelacionada" where "ProcessoId" = '${processoId}';
+      delete from "ProcessoAssociado" where "ProcessoId" = '${processoId}';
+      delete from "Substancia" where "ProcessoId" = '${processoId}';
+      delete from "Titulo" where "ProcessoId" = '${processoId}';
+      delete from "Andamento" a where exists (select 3 from "Sei" s where a."SeiId" = s."Id" and s."ProcessoId" = '${processoId}');
+      delete from "Protocolo" p where exists (select 3 from "Sei" s where p."SeiId" = s."Id" and s."ProcessoId" = '${processoId}');
+      delete from "Processo" where "Id" = '${processoId}'`
     )
   }
   async deletaSei(client: Client,seiId: string): Promise<void> {
@@ -198,5 +197,9 @@ export class Db implements IDb {
       delete from "Protocolo" where "SeiId" = ${seiId}
       delete from "Sei" where "Id" = ${seiId}`
     )
+  }
+  async verificaProcessoExiste(client: Client, numeroProcesso: string): Promise<boolean> {
+    const queryResultSei = await client.query<Sei>('select 1 from "Processo" where "NumeroProcesso" = $1', [numeroProcesso])
+    return !!queryResultSei.rows[0]
   }
 }

@@ -12,6 +12,9 @@ export class MetodosNavegador implements IMetodosNavegador {
   async fecharBrowser(browser: Browser): Promise<void> {
     await browser.close()
   }
+  async fecharAba(page: Page): Promise<void> {
+    await page.close()
+  }
   async navegar(browser: Browser, url: string): Promise<Page> {
     const page = await browser.newPage()
     page.setDefaultNavigationTimeout(0)
