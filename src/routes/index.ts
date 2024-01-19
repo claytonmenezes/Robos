@@ -18,7 +18,7 @@ const seiAnmController = new SeiAnmController(seiAnm, metodosNavegador, db)
 router.get('/', (_, res) => res.sendStatus(200))
 router.get('/SistemasAnm/buscaProcesso', sistemasAnmController.buscaProcesso)
 router.get('/SistemasAnm/buscaProcessoEmLote', sistemasAnmController.buscaProcessoEmLote)
+router.get('/SistemasAnm/Filtrar', seiAnmController.filtrar)
 router.get('/SeiAnm/buscaSei', seiAnmController.buscaSei)
 router.get('/SeiAnm/buscaSeiEmLote', seiAnmController.buscaSeiEmLote)
-router.get('/SeiAnm/Filtrar', seiAnmController.filtrar)
 export default router
