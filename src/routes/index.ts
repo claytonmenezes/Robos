@@ -20,5 +20,5 @@ router.get('/SistemasAnm/buscaProcesso', sistemasAnmController.buscaProcesso)
 router.get('/SistemasAnm/buscaProcessoEmLote', sistemasAnmController.buscaProcessoEmLote)
 router.get('/SeiAnm/buscaSei', seiAnmController.buscaSei)
 router.get('/SeiAnm/buscaSeiEmLote', seiAnmController.buscaSeiEmLote)
-
+router.get('/SeiAnm/Filtrar', seiAnmController.filtrar)
 export default router

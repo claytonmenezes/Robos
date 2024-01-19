@@ -41,4 +41,5 @@ export interface IDb {
   deletaProcesso (client: Client, processoId: string): Promise<void>
   deletaSei (client: Client, seiId: string): Promise<void>
   verificaProcessoExiste (client: Client, numeroProcesso: string): Promise<boolean>
+  filtrar(client: Client, filtro: string): Promise<Array<Processo>> | Promise<null>
 }
