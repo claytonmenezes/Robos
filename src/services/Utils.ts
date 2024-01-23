@@ -1,5 +1,6 @@
 import { v4 } from 'uuid'
 import axios from 'axios'
+import readlineModule from 'readline'
 
 const uuid = () => {
   return v4()
@@ -36,8 +37,25 @@ const pegaCaptchaProcesso = async (taskId: string): Promise<string> => {
   }
   return response.data.solution.text
 }
+const captchaManual = () => {
+  console.log('Digite o Captcha')
+  return new Promise<string>(resolve => {
+    readlineModule.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+    let captcha = ''
+    process.stdin.on('keypress', (charater, key) => {
+      captcha += charater
+      console.log(captcha)
+      if (captcha.length === 4) {
+        process.stdin.setRawMode(false);
+        return resolve(captcha)
+      }
+    })
+  })
+}
 export {
   uuid,
   esperar,
   base64ToCaptchaProcesso,
+  captchaManual
 }

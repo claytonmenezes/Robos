@@ -97,23 +97,65 @@ export class Db implements IDb {
     return queryResultSubstancia.rows
   }
   async insereSei(client: Client, sei: Sei, processoId?: string): Promise<Sei> {
-    const sql = 'insert into "Sei" ("Id", "Processo", "Tipo", "DataRegistro", "Interessados", "Link", "ProcessoId") values ($1, $2, $3, $4, $5, $6, $7)'
-    await client.query<Sei>(sql, [uuid(), sei.Processo, sei.Tipo, sei.DataRegistro, sei.Interessados, sei.Link, processoId])
-    const queryResultSei = await client.query<Sei>('select * from "Sei" where "ProcessoId" = $1', [processoId])
-    return queryResultSei.rows[0]
+    let sql = `
+      insert into "Sei" ("Id", "Processo", "Tipo", "DataRegistro", "Interessados", "Link", "ProcessoId")
+      select $1, $2, $3, $4, $5, $6, $7
+      where not exists(
+        select 1
+        from "Sei"
+        where "Processo" = $2
+      )
+    `
+    await client.query(sql, [uuid(), sei.Processo, sei.Tipo, sei.DataRegistro, sei.Interessados, sei.Link, processoId])
+
+    sql = `
+      select *
+      from "Sei"
+      where "Processo" = $1
+    `
+    const seiDb = (await client.query<Sei>(sql, [sei.Processo])).rows[0]
+
+    if (sei.Andamentos?.length) {
+      seiDb.Andamentos = await this.insereAndamentos(client, sei.Andamentos, seiDb.Id)
+    }
+    if (sei.Protocolos?.length) {
+      seiDb.Protocolos = await this.insereProtocolos(client, sei.Protocolos, seiDb.Id)
+    }
+    console.log(seiDb)
+    return seiDb
   }
   async insereProtocolos(client: Client, protocolos?: Protocolo[], seiId?: string): Promise<Protocolo[]> {
     if (!protocolos?.length) return []
-    const sql = 'insert into "Protocolo" ("Id", "DocumentoProcesso", "TipoDocumento", "DataDocumento", "DataRegistro", "Unidade", "Link", "DataCriacao", "SeiId") values($1, $2, $3, $4, $5, $6, $7, $8, $9)'
-    for (const protocolo of protocolos) await client.query<Protocolo>(sql, [uuid(), protocolo.DocumentoProcesso, protocolo.TipoDocumento, protocolo.DataDocumento, protocolo.DataRegistro, protocolo.Unidade, protocolo.Link, protocolo.DataCriacao, seiId])
+    const sql = `
+      insert into "Protocolo" ("Id", "DocumentoProcesso", "TipoDocumento", "DataDocumento", "DataRegistro", "Unidade", "Link", "DataCriacao", "SeiId")
+      select $1, $2, $3, $4, $5, $6, $7, $8, $9
+      where not exists(
+        select 1
+        from "Protocolo"
+        where "DocumentoProcesso" = $2
+        and "SeiId" = $9
+      )
+    `
+    for (const protocolo of protocolos) await client.query<Protocolo>(sql, [uuid(), protocolo.DocumentoProcesso, protocolo.TipoDocumento, protocolo.DataDocumento, protocolo.DataRegistro, protocolo.Unidade, protocolo.Link, new Date(), seiId])
     const queryResultProtocolo = await client.query<Protocolo>('select * from "Protocolo" where "SeiId" = $1', [seiId])
     return queryResultProtocolo.rows
   }
   async insereAndamentos(client: Client, andamentos?: Andamento[], seiId?: string): Promise<Andamento[]> {
     if (!andamentos?.length) return []
-    const sql = 'insert into Andamento (Id, DataHora, Unidade, Descricao, DataCriacao, SeiId) values($1, $2, $3, $4, $5, $6)'
-    for (const andamento of andamentos) await client.query<Andamento>(sql, [uuid(), andamento.DataHora, andamento.Unidade, andamento.Descricao, andamento.DataCriacao, seiId])
-    const queryResultAndamento = await client.query<Andamento>('select * from Andamento where SeiId = $1', [seiId])
+    const sql = `
+      insert into "Andamento" ("Id", "DataHora", "Unidade", "Descricao", "DataCriacao", "SeiId")
+      select $1, $2, $3, $4, $5, $6
+      where not exists(
+        select 1
+        from "Andamento"
+        where "DataHora" = $2
+        and "Unidade" = $3
+        and "Descricao" = $4
+        and "SeiId" = $6
+      )
+    `
+    for (const andamento of andamentos) await client.query<Andamento>(sql, [uuid(), andamento.DataHora, andamento.Unidade, andamento.Descricao, new Date(), seiId])
+    const queryResultAndamento = await client.query<Andamento>('select * from "Andamento" where "SeiId" = $1', [seiId])
     return queryResultAndamento.rows
   }
   async buscaProcesso(client: Client, numeroProcesso: string): Promise<Processo | void> {
@@ -173,8 +215,9 @@ export class Db implements IDb {
     return queryResultProcessos.rows[0]
   }
   async buscaSei(client: Client, nup: string): Promise<Sei> {
-    const queryResultSei = await client.query<Sei>('select * from "Sei" where "Processo" = $1', [nup])
-    return queryResultSei.rows[0]
+    const sei = (await client.query<Sei>('select * from "Sei" where "Processo" = $1', [nup])).rows[0]
+    
+    return sei
   }
   async deletaProcesso(client: Client, processoId?: string): Promise<void> {
     await client.query(`
