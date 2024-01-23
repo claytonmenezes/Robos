@@ -31,7 +31,9 @@ export class SeiAnmController {
         page.on('dialog', async (dialog) => await dialog.accept())
         const pesquisou = await this.seiAnm.pesquisaSei(page, nup)
         if (!pesquisou) {
-          axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {error: 'Erro na pesquisa do Sei'} })
+          if (req.query.sessionId) {
+            axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {error: 'Erro na pesquisa do Sei'} })
+          }
           return
         }
         esperar(1000)
@@ -42,7 +44,9 @@ export class SeiAnmController {
 
       const processo = await this.db.buscaProcessoPorNup(client, nup)
       if (sei && processo && processo.Id) sei = await this.db.insereSei(client, sei, processo?.Id)
-      axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: sei })
+      if (req.query.sessionId) {
+        axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: sei })
+      }
     } finally {
       this.db.desconectar(client)
       this.metodosNavegador.fecharBrowser(browser)
