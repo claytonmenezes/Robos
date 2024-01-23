@@ -61,12 +61,14 @@ export class SistemasAnmController {
           }
         }
       }
-      axios({
-        baseURL: process.env.URL_SOCKET,
-        params: {sessionId: req.query.sessionId},
-        url: '/buscaProcessoEmLote',
-        data: processos
-      })
+      if (req.query.sessionId) {
+        axios({
+          baseURL: process.env.URL_SOCKET,
+          params: {sessionId: req.query.sessionId},
+          url: '/buscaProcessoEmLote',
+          data: processos
+        })
+      }
     } finally {
       this.metodosNavegador.fecharBrowser(browser)
     }
