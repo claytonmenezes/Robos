@@ -22,9 +22,9 @@ export class SeiAnmController {
     try {
       const nup = req.query.nup as string
       let sei = await this.db.buscaSei(client, nup)
-      res.status(200).send(sei)
-      if (sei && sei.Link) {
-        const page = await this.metodosNavegador.navegar(browser, sei?.Link)
+      if (sei) {
+        res.status(200).send(sei)
+        const page = await this.metodosNavegador.navegar(browser, sei.Link!)
         sei = await this.seiAnm.pegaSei(page)
       } else {
         const page = await this.metodosNavegador.navegar(browser, 'https://sei.anm.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=0')
@@ -45,7 +45,7 @@ export class SeiAnmController {
       const processo = await this.db.buscaProcessoPorNup(client, nup)
       if (sei && processo && processo.Id) sei = await this.db.insereSei(client, sei, processo?.Id)
       if (req.query.sessionId) {
-        axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: sei })
+        axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {msg: 'Atualizado'} })
       }
     } finally {
       this.db.desconectar(client)

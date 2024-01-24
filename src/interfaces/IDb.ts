@@ -10,6 +10,7 @@ import { Substancia } from "../models/Substancia"
 import { Sei } from "../models/Sei"
 import { Protocolo } from "../models/Protocolo"
 import { Andamento } from "../models/Andamento"
+import { Ibama } from "../models/Ibama"
 import { Client } from "pg"
 
 export interface IDb {
@@ -28,18 +29,21 @@ export interface IDb {
   insereProtocolos (client: Client, protocolos: Protocolo[], seiId: string): Promise<Protocolo[]>
   insereAndamentos (client: Client, andamentos: Andamento[], seiId: string): Promise<Andamento[]>
   buscaProcesso (client: Client, numeroProcesso: string): Promise<Processo | void>
-  buscaProcessoPorNup (client: Client, nup: string): Promise<Processo> | Promise<null>
-  buscarCondicoesPropriedadeSoloPorProcesso(client: Client, processoId: string): Promise<CondicoesPropriedadeSolo[]> | Promise<null>
-  buscarDocumentosProcessoPorProcesso(client: Client, processoId: string): Promise<DocumentoProcesso[]> | Promise<null>
-  buscarEventosPorProcesso(client: Client, processoId: string): Promise<Evento[]> | Promise<null>
-  buscarMunicipiosPorProcesso(client: Client, processoId: string): Promise<Municipio[]> | Promise<null>
-  buscarPessoasRelacionadasPorProcesso(client: Client, processoId: string): Promise<PessoaRelacionada[]> | Promise<null>
-  buscarProcessosAssociadosPorProcesso(client: Client, processoId: string): Promise<ProcessoAssociado[]> | Promise<null>
-  buscarSubstanciasPorProcesso(client: Client, processoId: string): Promise<Substancia[]> | Promise<null>
-  buscarTitulosPorProcesso(client: Client, processoId: string): Promise<Titulo[]> | Promise<null>
-  buscaSei (client: Client, nup: string): Promise<Sei> | Promise<null>
+  buscaProcessoPorNup (client: Client, nup: string): Promise<Processo | null>
+  buscarCondicoesPropriedadeSoloPorProcesso(client: Client, processoId: string): Promise<CondicoesPropriedadeSolo[] | null>
+  buscarDocumentosProcessoPorProcesso(client: Client, processoId: string): Promise<DocumentoProcesso[] | null>
+  buscarEventosPorProcesso(client: Client, processoId: string): Promise<Evento[] | null>
+  buscarMunicipiosPorProcesso(client: Client, processoId: string): Promise<Municipio[] | null>
+  buscarPessoasRelacionadasPorProcesso(client: Client, processoId: string): Promise<PessoaRelacionada[] | null>
+  buscarProcessosAssociadosPorProcesso(client: Client, processoId: string): Promise<ProcessoAssociado[] | null>
+  buscarSubstanciasPorProcesso(client: Client, processoId: string): Promise<Substancia[] | null>
+  buscarTitulosPorProcesso(client: Client, processoId: string): Promise<Titulo[] | null>
+  buscaSei (client: Client, nup: string): Promise<Sei | null>
   deletaProcesso (client: Client, processoId: string): Promise<void>
   deletaSei (client: Client, seiId: string): Promise<void>
   verificaProcessoExiste (client: Client, numeroProcesso: string): Promise<boolean>
-  filtrar(client: Client, filtro: string): Promise<Array<Processo>> | Promise<null>
+  filtrar (client: Client, filtro: string): Promise<Array<Processo> | null>,
+  buscaIbama (client: Client, cpfcnpj: string): Promise<Ibama | null>
+  insereIbama (client: Client, ibama: Ibama, ibamaId?: string): Promise<Ibama>
+  deletaIbama (client: Client, ibamaId: string): Promise<void>
 }

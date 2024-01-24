@@ -10,9 +10,10 @@ import { Sei } from '../models/Sei'
 import { Client } from 'pg'
 import { Substancia } from '../models/Substancia'
 import { Titulo } from '../models/Titulo'
-import { Andamento } from '../models/Andamento'
+import { Andamento, createAndamento } from '../models/Andamento'
 import { Protocolo } from '../models/Protocolo'
 import { uuid } from './Utils'
+import { Ibama, createIbama } from '../models/Ibama'
 
 export class Db implements IDb {
   async conectar(): Promise<Client> {
@@ -253,5 +254,16 @@ export class Db implements IDb {
       order by length ("NumeroProcesso") desc
     `, [`%${filtro}%`])
     return processos.rows
+  }
+  async buscaIbama(client: Client, cpfcnpj: string): Promise<Ibama | null> {
+    return createIbama({
+      Id: uuid()
+    })
+  }
+  async insereIbama (client: Client, ibama: Ibama, ibamaId?: string): Promise<Ibama> {
+    throw new Error('Method not implemented.')
+  }
+  async deletaIbama (client: Client, ibamaId: string): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 }
