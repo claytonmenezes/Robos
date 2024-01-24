@@ -27,6 +27,7 @@ const base64ToCaptchaProcesso = async (base64: string) => {
   }
 }
 const pegaCaptchaProcesso = async (taskId: string): Promise<string> => {
+  console.log('pegaCaptchaProcesso')
   esperar(1000)
   const response = await axios.post('https://api.capmonster.cloud/getTaskResult', {
     clientKey: 'f2fb58850fb4e0ee273a77025484c868',
