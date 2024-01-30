@@ -247,11 +247,12 @@ export class Db implements IDb {
     return !!queryResultSei.rows[0]
   }
   async filtrar(client: Client, filtro: string): Promise<Processo[]> {
+    filtro = filtro.replace('/', '').replace('.', '').replace(' ', '').toLowerCase()
     const processos = await client.query<Processo>(`
       select *
       from "Processo"
-      where REGEXP_REPLACE(replace(LOWER("NumeroProcesso"), ' ', ''), '[^0-9]+', '', 'g') like replace(LOWER($1), ' ', '')
-      order by length ("NumeroProcesso") desc
+      where LOWER("NumeroProcesso") like $1 or LOWER("NomeCliente") like $1
+      order by "NumeroProcesso" desc
     `, [`%${filtro}%`])
     return processos.rows
   }
