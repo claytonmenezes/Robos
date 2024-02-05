@@ -26,6 +26,9 @@ export class ServicosIbamaController {
       if (ibamaDb && ibamaDb.Id) await this.db.deletaIbama(client, ibamaDb.Id)
       ibama = await this.db.insereIbama(client, ibama, ibamaDb?.Id)
       return res.status(200).json(ibama)
+    } catch (e) {
+      if (e instanceof Error) return res.status(500).send(e.message)
+      return res.status(500).send('Erro desconhecido')
     } finally {
       this.db.desconectar(client)
       await esperar(1000)

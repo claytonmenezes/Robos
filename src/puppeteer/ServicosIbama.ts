@@ -29,6 +29,7 @@ export class ServicosIbama implements IServicosIbama {
   async pegaIbama(page: Page, cpfcnpj: string): Promise<Ibama> {
     const html = await this.pesquisar(page, cpfcnpj)
     page.setContent(html)
+    if (await this.metodos.verificaElementoVisivel(page, '#campo_txt_atencao')) throw new Error('Erro ao buscar Cpf/Cnpj')
     let ibama = createIbama({
       Id: uuid(),
       NumeroRegistro: await page.$eval('#num_registro', (input) => (input as HTMLInputElement).value),
