@@ -33,7 +33,6 @@ export class SeiAnmController {
         const page = await this.metodosNavegador.navegar(browser, 'https://sei.anm.gov.br/sei/modulos/pesquisa/md_pesq_processo_pesquisar.php?acao_externa=protocolo_pesquisar&acao_origem_externa=protocolo_pesquisar&id_orgao_acesso_externo=0')
         page.on('dialog', async (dialog) => await dialog.accept())
         await this.seiAnm.pesquisaSei(page, nup)
-        esperar(1000)
         const link = await page.$eval('#conteudo > table > tbody > tr.resTituloRegistro > td.resTituloEsquerda > a.protocoloNormal', (e) => e.href)
         await page.goto(link)
         sei = await this.seiAnm.pegaSei(page)

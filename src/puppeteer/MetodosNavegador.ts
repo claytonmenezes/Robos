@@ -1,6 +1,6 @@
 import puppeteer, { Browser, Page } from 'puppeteer'
 import { IMetodosNavegador } from '../interfaces/IMetodosNavegador'
-import { base64ToCaptchaProcesso } from '../services/Utils'
+import { base64ToCaptchaProcesso, base64ToCaptchaSei } from '../services/Utils'
 
 export class MetodosNavegador implements IMetodosNavegador {
   async abrirBrowser(): Promise<Browser> {
@@ -53,10 +53,14 @@ export class MetodosNavegador implements IMetodosNavegador {
       return false
     }
   }
-  async pegaCaptcha (page: Page, selector: string): Promise<string> {
+  async pegaCaptcha (page: Page, selector: string, entidade: string): Promise<string> {
     const el = await page.$(selector)
-    const base64 = await el?.screenshot({ encoding: 'base64' })
-    const captcha = await base64ToCaptchaProcesso(base64 as string) as string
-    return captcha
+    const base64 = await el?.screenshot({ encoding: 'base64' }) as string
+    if (entidade === 'Sei') {
+      return base64ToCaptchaSei(base64)
+    } else if (entidade === 'Processo') {
+      return base64ToCaptchaProcesso(base64)
+    }
+    throw new Error('Erro ao buscar o captcha')
   }
 }

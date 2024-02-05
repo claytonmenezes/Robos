@@ -122,7 +122,6 @@ export class Db implements IDb {
     if (sei.Protocolos?.length) {
       seiDb.Protocolos = await this.insereProtocolos(client, sei.Protocolos, seiDb.Id)
     }
-    console.log(seiDb)
     return seiDb
   }
   async insereProtocolos(client: Client, protocolos?: Protocolo[], seiId?: string): Promise<Protocolo[]> {

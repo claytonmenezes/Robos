@@ -1,5 +1,5 @@
 import { v4 } from 'uuid'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import readlineModule from 'readline'
 
 const uuid = () => {
@@ -8,23 +8,27 @@ const uuid = () => {
 const esperar = (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+const base64ToCaptchaSei = async (base64: string) => {
+  const form = new FormData()
+  form.append('authtoken', 'Oi23a033F0UK9gx41DaWG5IvWF45Y8379q93BruqA2Y8B3MN6x3UlN891105G6B6Y7Oz0E89JkooqmvmQ62H70L1Q084Ruqr8X7I3UawYbiH5qLBPvGW170kC64W6lsBV8D4ORb80e3mMrTK2hmF5lSx87TS')
+  form.append('captchafile', `base64:${base64}`)
+
+  const captcha = await axios.post('http://api.dbcapi.me/api/captcha', form).then(res => res.data?.text)
+  return captcha as string
+}
 const base64ToCaptchaProcesso = async (base64: string) => {
-  try {
-    const data = {
-      clientKey: 'f2fb58850fb4e0ee273a77025484c868',
-      task: {
-        type: 'ImageToTextTask',
-        body: base64,
-        Case: true,
-        recognizingThreshold: 90
-      }
+  const data = {
+    clientKey: 'f2fb58850fb4e0ee273a77025484c868',
+    task: {
+      type: 'ImageToTextTask',
+      body: base64,
+      Case: true,
+      recognizingThreshold: 90
     }
-    const res = await axios.post('https://api.capmonster.cloud/createTask', data)
-    const captcha = await pegaCaptchaProcesso(res.data.taskId)
-    return captcha
-  } catch (error) {
-    console.log(error)
   }
+  const res = await axios.post('https://api.capmonster.cloud/createTask', data)
+  const captcha = await pegaCaptchaProcesso(res.data.taskId)
+  return captcha
 }
 const pegaCaptchaProcesso = async (taskId: string): Promise<string> => {
   console.log('pegaCaptchaProcesso')
@@ -58,5 +62,6 @@ export {
   uuid,
   esperar,
   base64ToCaptchaProcesso,
+  base64ToCaptchaSei,
   captchaManual
 }

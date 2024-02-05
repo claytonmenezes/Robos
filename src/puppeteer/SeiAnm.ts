@@ -17,7 +17,7 @@ export class SeiAnm implements ISeiAnm {
     if (process.env.NODE_ENV === 'dev') {
       captcha = await captchaManual()
     } else {
-      captcha = await this.metodos.pegaCaptcha(page, '#lblCaptcha > img')
+      captcha = await this.metodos.pegaCaptcha(page, '#lblCaptcha > img', 'Sei')
     }
     console.log('pesquisaSei', nup, captcha)
     const input = await page.$('#txtProtocoloPesquisa')

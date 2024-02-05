@@ -20,7 +20,7 @@ export class SistemasAnm implements ISistemasAnm {
   }
 
   async pegaProcesso (page: Page, numeroProcesso: string): Promise<Processo> {
-    const captcha = await this.metodos.pegaCaptcha(page, '#ctl00_conteudo_trCaptcha > td:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img')
+    const captcha = await this.metodos.pegaCaptcha(page, '#ctl00_conteudo_trCaptcha > td:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img', 'Processo')
     await this.pesquisaProcesso(page, numeroProcesso, captcha)
     const processo = createProcesso({
       NumeroProcesso: numeroProcesso,
