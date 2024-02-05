@@ -3,7 +3,14 @@ import { ZodError, z } from "zod"
 export const Ibama = z.object({
   Id: z.string().uuid({
     message: 'UUID inválido'
-  }).optional()
+  }).optional(),
+  NumeroRegistro: z.string().optional(),
+  DataConsulta:  z.string().optional(),
+  DataCR: z.string().optional(),
+  DataValidadeCR: z.string().optional(),
+  CpfCnpj: z.string().optional(),
+  RazaoSocial: z.string().optional(),
+  Descricao:  z.string().optional()
 })
 
 export type Ibama = z.infer<typeof Ibama>

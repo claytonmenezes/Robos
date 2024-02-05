@@ -256,14 +256,24 @@ export class Db implements IDb {
     return processos.rows
   }
   async buscaIbama(client: Client, cpfcnpj: string): Promise<Ibama | null> {
-    return createIbama({
-      Id: uuid()
-    })
+    cpfcnpj = cpfcnpj.replace('-', '').replace('.', '').replace('/', '').replace(' ', '')
+    const ibamaResult = await client.query<Ibama>(`
+      select *
+      from "Ibama"
+      where "CpfCnpj" = $1
+    `, [cpfcnpj])
+    return ibamaResult.rows[0]
   }
   async insereIbama (client: Client, ibama: Ibama, ibamaId?: string): Promise<Ibama> {
-    throw new Error('Method not implemented.')
+    if (!ibama) return {}
+    ibama.CpfCnpj = ibama.CpfCnpj?.replace('-', '').replace('.', '').replace('/', '').replace(' ', '')
+    await client.query<Ibama>(
+      'insert into "Ibama" ("Id", "NumeroRegistro", "DataConsulta", "DataCR", "DataValidadeCR", "CpfCnpj", "RazaoSocial", "Descricao") values($1, $2, $3, $4, $5, $6, $7, $8)',
+      [uuid(), ibama.NumeroRegistro, ibama.DataConsulta, ibama.DataCR, ibama.DataValidadeCR, ibama.CpfCnpj, ibama.RazaoSocial, ibama.Descricao])
+    const queryResultIbama = await client.query<Ibama>('select * from "Ibama" where "CpfCnpj" = $1', [ibama.CpfCnpj])
+    return queryResultIbama.rows[0]
   }
   async deletaIbama (client: Client, ibamaId: string): Promise<void> {
-    throw new Error('Method not implemented.')
+    await client.query(`delete from "Ibama" where "Id" = $1`, [ibamaId])
   }
 }
