@@ -56,20 +56,4 @@ export class SeiAnmController {
   buscaSeiEmLote = async (req: Request, res: Response) => {
     res.sendStatus(200)
   }
-  filtrar = async (req: Request, res: Response) => {
-    try {
-      const client = await this.db.conectar()
-      try {
-        const filtro = req.query.filtro
-        const processos = await this.db.filtrar(client, filtro as string)
-        res.send(processos).status(200)
-      } catch (error) {
-        res.send(error).status(500)
-      } finally {
-        await  this.db.desconectar(client)
-      }
-    } catch (error) {
-      res.send(error).status(500)
-    }
-  }
 }

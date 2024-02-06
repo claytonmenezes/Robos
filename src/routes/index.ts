@@ -22,7 +22,7 @@ const servicosIbamaController = new ServicosIbamaController(servicosIbama, metod
 router.get('/', (_, res) => res.sendStatus(200))
 router.get('/SistemasAnm/buscaProcesso', sistemasAnmController.buscaProcesso)
 router.get('/SistemasAnm/buscaProcessoEmLote', sistemasAnmController.buscaProcessoEmLote)
-router.get('/SistemasAnm/Filtrar', seiAnmController.filtrar)
+router.get('/SistemasAnm/Filtrar', sistemasAnmController.filtrar)
 router.get('/SeiAnm/buscaSei', seiAnmController.buscaSei)
 router.get('/SeiAnm/buscaSeiEmLote', seiAnmController.buscaSeiEmLote)
 router.get('/ServicosIbama/buscaIbama', servicosIbamaController.buscaIbama)

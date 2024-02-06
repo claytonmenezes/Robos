@@ -246,7 +246,7 @@ export class Db implements IDb {
     return !!queryResultSei.rows[0]
   }
   async filtrar(client: Client, filtro: string): Promise<Processo[]> {
-    filtro = filtro.replace('/', '').replace('.', '').replace(' ', '').toLowerCase()
+    filtro = filtro.toLowerCase()
     const processos = await client.query<Processo>(`
       select *
       from "Processo"
