@@ -220,19 +220,7 @@ export class Db implements IDb {
     return sei
   }
   async deletaProcesso(client: Client, processoId?: string): Promise<void> {
-    await client.query(`
-      delete from "CondicaoPropriedadeSolo" where "ProcessoId" = '${processoId}';
-      delete from "DocumentoProcesso" where "ProcessoId" = '${processoId}';
-      delete from "Evento" where "ProcessoId" = '${processoId}';
-      delete from "Municipio" where "ProcessoId" = '${processoId}';
-      delete from "PessoaRelacionada" where "ProcessoId" = '${processoId}';
-      delete from "ProcessoAssociado" where "ProcessoId" = '${processoId}';
-      delete from "Substancia" where "ProcessoId" = '${processoId}';
-      delete from "Titulo" where "ProcessoId" = '${processoId}';
-      delete from "Andamento" a where exists (select 3 from "Sei" s where a."SeiId" = s."Id" and s."ProcessoId" = '${processoId}');
-      delete from "Protocolo" p where exists (select 3 from "Sei" s where p."SeiId" = s."Id" and s."ProcessoId" = '${processoId}');
-      delete from "Processo" where "Id" = '${processoId}'`
-    )
+    await client.query(`delete from "Processo" where "Id" = '${processoId}'`)
   }
   async deletaSei(client: Client,seiId: string): Promise<void> {
     await client.query(`

@@ -18,29 +18,17 @@ export class SistemasAnmController {
   buscaProcesso = async (req: Request, res: Response) => {
     console.log('inicio buscaProcesso')
     const client = await this.db.conectar()
-    const browser = await this.metodosNavegador.abrirBrowser()
     try {
       const numeroProcesso = req.query.numeroProcesso as string
       let processoDb = await this.db.buscaProcesso(client, numeroProcesso)
-      res.status(200).send(processoDb)
-      const page = await this.metodosNavegador.navegar(browser, 'https://sistemas.anm.gov.br/SCM/site/admin/dadosProcesso.aspx')
-      let processo = await this.sistemasAnm.pegaProcesso(page, numeroProcesso)
-      if (processoDb && processoDb.Id) this.db.deletaProcesso(client, processoDb.Id)
-      processo = await this.db.insereProcesso(client, processo, processoDb?.Id)
-      if (req.query.sessionId) {
-        axios({
-          baseURL: process.env.URL_SOCKET,
-          params: {sessionId: req.query.sessionId},
-          url: '/buscaProcesso',
-          data: processo
-        })
-      }
+      //TODO INCLUIR NO MENSAGEIRO
+      return res.status(200).send(processoDb)
     } finally {
       this.db.desconectar(client)
-      this.metodosNavegador.fecharBrowser(browser)
     }
   }
   buscaProcessoEmLote = async (req: Request, res: Response) => {
+    res.sendStatus(200)
     const browser = await this.metodosNavegador.abrirBrowser()
     try {
       const numerosProcesso = req.body.numerosProcesso as string[]
@@ -61,14 +49,15 @@ export class SistemasAnmController {
           }
         }
       }
-      if (req.query.sessionId) {
-        axios({
-          baseURL: process.env.URL_SOCKET,
-          params: {sessionId: req.query.sessionId},
-          url: '/buscaProcessoEmLote',
-          data: processos
-        })
-      }
+      axios({
+        baseURL: process.env.URL_PLATAFORMA,
+        method: 'Post',
+        url: 'api/callback/processes/update',
+        data: {processos}
+      })
+    } catch (error) {
+      console.error(error)
+      return  res.status(500).json({ error: 'Erro ao pegar os dados do processo'})
     } finally {
       this.metodosNavegador.fecharBrowser(browser)
     }

@@ -41,13 +41,13 @@ export class SeiAnmController {
         res.status(200).send(sei)
       }
 
-      if (req.query.sessionId) {
-        axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {msg: 'Atualizado'} })
-      }
+      // if (req.query.sessionId) {
+      //   axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {msg: 'Atualizado'} })
+      // }
     } catch (e) {
-      if (req.query.sessionId) {
-        axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {error: 'Erro na pesquisa do Sei'} })
-      }
+      // if (req.query.sessionId) {
+      //   axios({ baseURL: process.env.URL_SOCKET, params: {sessionId: req.query.sessionId}, url: '/buscaSei', data: {error: 'Erro na pesquisa do Sei'} })
+      // }
     } finally {
       this.db.desconectar(client)
       this.metodosNavegador.fecharBrowser(browser)
