@@ -216,7 +216,6 @@ export class Db implements IDb {
   }
   async buscaSei(client: Client, nup: string): Promise<Sei> {
     const sei = (await client.query<Sei>('select * from "Sei" where "Processo" = $1', [nup])).rows[0]
-    
     return sei
   }
   async deletaProcesso(client: Client, processoId?: string): Promise<void> {
